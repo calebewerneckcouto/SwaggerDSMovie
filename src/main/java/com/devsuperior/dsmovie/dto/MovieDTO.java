@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.URL;
 
 import com.devsuperior.dsmovie.entities.MovieEntity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -16,8 +17,9 @@ public class MovieDTO {
 
 	private static final DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
+	@Schema(description = "Database generated movie ID")
 	private Long id;
-	
+	@Schema(description = "Movie title")
 	@NotBlank(message = "Required field")
 	@Size(min = 5, max = 80, message = "Title must be between 5 and 80 characters")
 	private String title;
