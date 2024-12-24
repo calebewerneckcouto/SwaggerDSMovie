@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dsmovie.dto.MovieDTO;
+import com.devsuperior.dsmovie.dto.MovieGenreDTO;
 import com.devsuperior.dsmovie.entities.MovieEntity;
 import com.devsuperior.dsmovie.repositories.MovieRepository;
 import com.devsuperior.dsmovie.services.exceptions.DatabaseException;
@@ -29,12 +30,28 @@ public class MovieService {
 		Page<MovieDTO> page = result.map(x -> new MovieDTO(x));
 		return page;
 	}
+	
+	
+	@Transactional(readOnly = true)
+	public Page<MovieGenreDTO> findAllGenre(Pageable pageable) {
+		Page<MovieEntity> result = repository.findAll(pageable);
+		Page<MovieGenreDTO> page = result.map(x -> new MovieGenreDTO(x));
+		return page;
+	}
 
 	@Transactional(readOnly = true)
 	public MovieDTO findById(Long id) {
 		MovieEntity result = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
 		return new MovieDTO(result);
+	}
+	
+	
+	@Transactional(readOnly = true)
+	public MovieGenreDTO findByIdMovieGenre(Long id) {
+		MovieEntity result = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
+		return new MovieGenreDTO(result);
 	}
 
 	@Transactional
@@ -44,6 +61,15 @@ public class MovieService {
 		entity = repository.save(entity);
 		return new MovieDTO(entity);
 	}
+	
+	
+	@Transactional
+	public MovieGenreDTO insertMovieGenre(MovieGenreDTO dto) {
+		MovieEntity entity = new MovieEntity();
+		copyDtoToEntityGenre(dto, entity);
+		entity = repository.save(entity);
+		return new MovieGenreDTO(entity);
+	}
 
 	@Transactional
 	public MovieDTO update(Long id, MovieDTO dto) {
@@ -52,6 +78,20 @@ public class MovieService {
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
 			return new MovieDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+	}
+	
+	
+	
+	@Transactional
+	public MovieGenreDTO updateMoviegenre(Long id, MovieGenreDTO dto) {
+		try {
+			MovieEntity entity = repository.getReferenceById(id);
+			copyDtoToEntityGenre(dto, entity);
+			entity = repository.save(entity);
+			return new MovieGenreDTO(entity);
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Recurso não encontrado");
 		}
@@ -66,6 +106,14 @@ public class MovieService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Falha de integridade referencial");
 		}
+	}
+	
+	
+	private void copyDtoToEntityGenre(MovieGenreDTO dto, MovieEntity entity) {
+		entity.setTitle(dto.getTitle());
+		entity.setScore(dto.getScore());
+		entity.setCount(dto.getCount());
+		entity.setImage(dto.getImage());
 	}
 
 	private void copyDtoToEntity(MovieDTO dto, MovieEntity entity) {
