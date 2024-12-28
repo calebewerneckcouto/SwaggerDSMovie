@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.hibernate.validator.constraints.URL;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.devsuperior.dsmovie.entities.MovieEntity;
 
@@ -12,8 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-
-public class MovieDTO {
+// RepresentationModel<MovieDTO>  Heteoas
+public class MovieDTO extends RepresentationModel<MovieDTO> {
 
 	private static final DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
