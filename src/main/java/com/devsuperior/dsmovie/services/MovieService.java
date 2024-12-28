@@ -52,7 +52,11 @@ public class MovieService {
 	public MovieDTO findById(Long id) {
 		MovieEntity result = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
-		return new MovieDTO(result);
+		return new MovieDTO(result).
+				add(linkTo(methodOn(MovieController.class).findById(id)).withSelfRel())
+				.add(linkTo(methodOn(MovieController.class).findAll(null)).withRel("All moveis"))
+				.add(linkTo(methodOn(MovieController.class).update(id,null)).withRel("Update movie"))
+		         .add(linkTo(methodOn(MovieController.class).delete(id)).withRel("Delete movie"));
 	}
 	
 	
@@ -60,7 +64,11 @@ public class MovieService {
 	public MovieGenreDTO findByIdMovieGenre(Long id) {
 		MovieEntity result = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
-		return new MovieGenreDTO(result);
+		return new MovieGenreDTO(result).
+				add(linkTo(methodOn(MovieControllerV1.class).findById(id)).withSelfRel())
+				.add(linkTo(methodOn(MovieControllerV1.class).findAll(null)).withRel("All moveis"))
+				.add(linkTo(methodOn(MovieControllerV1.class).update(id,null)).withRel("Update movie"))
+		         .add(linkTo(methodOn(MovieControllerV1.class).delete(id)).withRel("Delete movie"));
 	}
 
 	@Transactional
@@ -68,7 +76,7 @@ public class MovieService {
 		MovieEntity entity = new MovieEntity();
 		copyDtoToEntity(dto, entity);
 		entity = repository.save(entity);
-		return new MovieDTO(entity);
+		return new MovieDTO(entity).add(linkTo(methodOn(MovieController.class).findById(entity.getId())).withRel("Get movie by id"));
 	}
 	
 	
@@ -77,7 +85,7 @@ public class MovieService {
 		MovieEntity entity = new MovieEntity();
 		copyDtoToEntityGenre(dto, entity);
 		entity = repository.save(entity);
-		return new MovieGenreDTO(entity);
+		return new MovieGenreDTO(entity).add(linkTo(methodOn(MovieControllerV1.class).findById(entity.getId())).withRel("Get movie by id"));
 	}
 
 	@Transactional
@@ -86,7 +94,7 @@ public class MovieService {
 			MovieEntity entity = repository.getReferenceById(id);
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
-			return new MovieDTO(entity);
+			return new MovieDTO(entity).add(linkTo(methodOn(MovieController.class).findById(entity.getId())).withRel("Get movie by id"));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Recurso não encontrado");
 		}
@@ -100,7 +108,7 @@ public class MovieService {
 			MovieEntity entity = repository.getReferenceById(id);
 			copyDtoToEntityGenre(dto, entity);
 			entity = repository.save(entity);
-			return new MovieGenreDTO(entity);
+			return new MovieGenreDTO(entity).add(linkTo(methodOn(MovieController.class).findById(entity.getId())).withRel("Get movie by id"));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Recurso não encontrado");
 		}
